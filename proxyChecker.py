@@ -5,11 +5,10 @@ import socket
 import threading
 import urllib.request
 from time import time
-from pathlib import Path  # Usando pathlib
+from pathlib import Path 
 
 import socks
 
-# Definir o caminho do arquivo user_agents.txt corretamente usando pathlib
 current_dir = Path(__file__).resolve().parent
 user_agents_file = current_dir / 'user_agents.txt'
 
