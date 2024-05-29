@@ -5,14 +5,18 @@ import socket
 import threading
 import urllib.request
 from time import time
+from pathlib import Path  # Usando pathlib
 
 import socks
 
+# Definir o caminho do arquivo user_agents.txt corretamente usando pathlib
+current_dir = Path(__file__).resolve().parent
+user_agents_file = current_dir / 'user_agents.txt'
+
 user_agents = []
-with open("user_agents.txt", "r") as f:
+with open(user_agents_file, "r") as f:
     for line in f:
         user_agents.append(line.replace("\n", ""))
-
 
 class Proxy:
     def __init__(self, method, proxy):
@@ -60,11 +64,9 @@ class Proxy:
     def __str__(self):
         return self.proxy
 
-
 def verbose_print(verbose, message):
     if verbose:
         print(message)
-
 
 def check(file, timeout, method, site, verbose, random_user_agent):
     proxies = []
@@ -82,7 +84,8 @@ def check(file, timeout, method, site, verbose, random_user_agent):
         if random_user_agent:
             new_user_agent = random.choice(user_agents)
         valid, time_taken, error = proxy.check(site, timeout, new_user_agent, verbose)
-        valid_proxies.extend([proxy] if valid else [])
+        if valid:
+            valid_proxies.append(proxy)
 
     threads = []
     for proxy in proxies:
@@ -100,7 +103,6 @@ def check(file, timeout, method, site, verbose, random_user_agent):
             f.write(str(proxy) + "\n")
 
     print(f"Found {len(valid_proxies)} valid proxies")
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
